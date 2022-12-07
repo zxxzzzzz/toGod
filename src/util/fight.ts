@@ -1,11 +1,10 @@
 import { Person } from '@/class/person';
+import { getWhiteSkill } from '@/data/skill';
 import { getWhiteWeapon } from '@/data/weapon';
 
 function fightPerson(p1: Person, p2: Person) {
-  let p1Speed = p1.speedPoint.count;
-  let p2Speed = p2.speedPoint.count;
   while (true) {
-    if (p1Speed >= p2Speed) {
+    if (p1.speedPoint.isMyTurn(p2.speedPoint)) {
       const p1D = p1.getDamage(p2);
       p2.healthPoint.count = p2.healthPoint.count - p1D.magicAttack - p1D.physicsAttack;
       console.log(p1.name, '对', p2.name, '造成', p1D.isCritical ? '暴击' : '', p1D.magicAttack + p1D.physicsAttack, '点伤害');
@@ -13,7 +12,7 @@ function fightPerson(p1: Person, p2: Person) {
         console.log(p2.name, '死亡');
         break;
       }
-      p2Speed = p2Speed + p2.speedPoint.count;
+      p2.speedPoint.add()
     } else {
       const p2D = p2.getDamage(p1);
       p1.healthPoint.count = p1.healthPoint.count - p2D.magicAttack - p2D.physicsAttack;
@@ -22,8 +21,10 @@ function fightPerson(p1: Person, p2: Person) {
         console.log(p1.name, '死亡');
         break;
       }
-      p1Speed = p1Speed + p1.speedPoint.count;
+      p1.speedPoint.add()
     }
+    p1.speedPoint.reset()
+    p2.speedPoint.reset()
     // const p1D = p.getDamage()
   }
 }
@@ -45,5 +46,6 @@ const p2 = new Person({
   physicsAttackPoint: 10,
 });
 p1.addWeapon(getWhiteWeapon());
+p1.addSkill(getWhiteSkill())
 
 fightPerson(p1, p2);

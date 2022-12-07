@@ -81,6 +81,7 @@ export class Person {
   criticalDefensePoint: ATTR.CriticalDefensePoint;
   speedPoint: ATTR.SpeedPoint;
   weaponList: GOOD.Weapon[];
+  skillList:GOOD.Skill[];
   constructor(p: {
     name: string;
     speedPoint: number;
@@ -102,11 +103,27 @@ export class Person {
     this.mp = new ATTR.MagicPoint({ n: 100, max: 100 });
     this.speedPoint = new ATTR.SpeedPoint({ n: p.speedPoint });
     this.weaponList = [];
+    this.skillList = [];
   }
-  /**添加武器 */
+  /**装备武器 */
   addWeapon(weapon: GOOD.Weapon) {
-    console.log(this.name, '装备了', weapon.name);
+    console.log(this.name, '装备了武器', weapon.name);
     this.weaponList.push(weapon);
+  }
+  /**装备技能 */
+  addSkill(skill:GOOD.Skill){
+    console.log(this.name, '装备了技能', skill.name);
+    this.skillList.push(skill);
+  }
+  /**我的战斗回合 */
+  myTurn(p:Person){
+    // 计算状态
+    // 使用技能
+    // this.skillList.forEach((skill) => {
+    //   skill.setEffect(this, p)
+    // })
+    // 计算总伤害
+
   }
   /**获取伤害值 */
   getDamage(p2: Person) {
