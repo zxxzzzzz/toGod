@@ -20,6 +20,18 @@ export class Medicine {}
 /**功法 */
 export class BasicManeuvers {}
 
+
+/**功法 */
+export class State {
+  turn:number
+  constructor(p:{turn:number}){
+    this.turn = p.turn
+  }
+  effect(p:{p1List:Person[], p2List:Person[]}){
+    
+  }
+}
+
 /**武器 */
 export class Weapon {
   physicsAttack: PhysicsAttackPoint;

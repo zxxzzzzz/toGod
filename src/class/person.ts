@@ -82,6 +82,7 @@ export class Person {
   speedPoint: ATTR.SpeedPoint;
   weaponList: GOOD.Weapon[];
   skillList:GOOD.Skill[];
+  stateList:GOOD.State[];
   constructor(p: {
     name: string;
     speedPoint: number;
@@ -102,8 +103,12 @@ export class Person {
     this.physicsAttackPoint = new ATTR.PhysicsAttackPoint({ n: p.physicsAttackPoint });
     this.mp = new ATTR.MagicPoint({ n: 100, max: 100 });
     this.speedPoint = new ATTR.SpeedPoint({ n: p.speedPoint });
+    // 装备得武器列表
     this.weaponList = [];
+    // 装备得技能列表
     this.skillList = [];
+    // 装备得技能列表
+    this.stateList = [];
   }
   /**装备武器 */
   addWeapon(weapon: GOOD.Weapon) {
@@ -115,28 +120,26 @@ export class Person {
     console.log(this.name, '装备了技能', skill.name);
     this.skillList.push(skill);
   }
-  /**我的战斗回合 */
-  myTurn(p:Person){
-    // 计算状态
-    // 使用技能
-    // this.skillList.forEach((skill) => {
-    //   skill.setEffect(this, p)
-    // })
-    // 计算总伤害
+  /**添加战斗状态 */
+  addFightState(){
+
+  }
+  /**重置战斗状态 */
+  resetFightState(){
 
   }
   /**获取伤害值 */
-  getDamage(p2: Person) {
-    const randomCritical = random.int(0, 100);
-    const weaponDamage = this.getWeaponDamage()
-    // 是否暴击
-    const isCritical = this.criticalHitPoint.count - p2.criticalDefensePoint.count >= randomCritical;
-    // 武器伤害
-    return {
-      physicsAttack: (this.physicsAttackPoint.count + weaponDamage.physicsAttack) * (isCritical ? this.criticalHitDamagePoint.count : 1),
-      magicAttack: 0,
-      isCritical,
-    };
+  getDamage() {
+    // const randomCritical = random.int(0, 100);
+    // const weaponDamage = this.getWeaponDamage()
+    // // 是否暴击
+    // const isCritical = this.criticalHitPoint.count - p2.criticalDefensePoint.count >= randomCritical;
+    // // 武器伤害
+    // return {
+    //   physicsAttack: (this.physicsAttackPoint.count + weaponDamage.physicsAttack) * (isCritical ? this.criticalHitDamagePoint.count : 1),
+    //   magicAttack: 0,
+    //   isCritical,
+    // };
   }
   getWeaponDamage() {
     const weaponDamage = this.weaponList.reduce(
