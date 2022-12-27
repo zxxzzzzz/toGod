@@ -28,7 +28,7 @@ export class State {
     this.turn = p.turn
   }
   effect(p:{p1List:Person[], p2List:Person[]}){
-    
+
   }
 }
 
@@ -39,6 +39,9 @@ export class Weapon {
   constructor(p: { physicsAttackPoint: number; name: string }) {
     this.physicsAttack = new PhysicsAttackPoint({ n: p.physicsAttackPoint });
     this.name = p.name;
+  }
+  effect(){
+    
   }
   getDamage() {
     return {
@@ -78,20 +81,8 @@ export class Skill extends GoodBase {
     this.cdTurn = p.cdTurn;
     this.turn = 0;
   }
-  setEffect(p1: Person, p2: Person) {
-    let canUse = true;
-    if (p1.mp.count < this.magicPointCost) {
-      canUse = false;
-    }
-    if (this.turn > 0) {
-      canUse = false;
-    }
-    if (!canUse) {
-      this.turn -= 1;
-      return;
-    }
-    this.turn = this.cdTurn;
-    this.effectFunc(p1, p2);
+  effect() {
+    
   }
   getDamage(p1: Person, p2: Person) {
     return this.damageFunc(p1, p2);

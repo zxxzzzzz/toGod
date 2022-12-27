@@ -1,7 +1,7 @@
 import { Person } from './person';
 
 /** 战斗裁判，安排一整局的战斗 */
-class Referee {
+export class Referee {
   turnCount = 0;
   p1List: Person[];
   p2List: Person[];
@@ -16,10 +16,12 @@ class Referee {
     // 回合开始
     while(!this.isOver()){
       const p = this.getNextActionPerson()
-      // p.figh
+      p.attack()
     }
     // 回合结束
     // 战斗结束
+    this.p1List.forEach((p) => p.resetFightState());
+    this.p2List.forEach((p) => p.resetFightState());
   }
   isOver() {
     return this.p1List.every(p => p.isDead()) || this.p2List.every(p => p.isDead())

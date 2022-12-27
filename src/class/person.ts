@@ -107,7 +107,7 @@ export class Person {
     this.weaponList = [];
     // 装备得技能列表
     this.skillList = [];
-    // 装备得技能列表
+    // 状态列表
     this.stateList = [];
   }
   /**装备武器 */
@@ -126,6 +126,9 @@ export class Person {
   }
   /**重置战斗状态 */
   resetFightState(){
+
+  }
+  attack(){
 
   }
   /**获取伤害值 */
