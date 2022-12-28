@@ -1,5 +1,5 @@
-import { GoodType, Quality } from '@/enum/good';
-import { SkillType } from '@/enum/skill';
+import { GoodType, Quality } from '../enum/good';
+import { SkillType } from '../enum/skill';
 import * as ATTR from './attr';
 import { Damage } from './damage';
 import { Person } from './person';

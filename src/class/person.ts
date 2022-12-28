@@ -4,7 +4,7 @@ import * as GOOD from './good';
 import { Referee } from './referee';
 import * as R from 'ramda';
 import { Damage } from './damage';
-import { SkillType } from '@/enum/skill';
+import { SkillType } from '../enum/skill';
 
 /**金币 */
 class Coin {
@@ -79,7 +79,9 @@ export class Person {
   bag: GOOD.Bag;
   healthPoint: ATTR.HealthPoint;
   physicsAttackPoint: ATTR.PhysicsAttackPoint;
+  physicsDefensePoint: ATTR.PhysicsDefensePoint;
   magicAttackPoint: ATTR.MagicAttackPoint;
+  magicDefensePoint: ATTR.MagicDefensePoint;
   mp: ATTR.MagicPoint;
   criticalHitPoint: ATTR.CriticalHitPoint;
   criticalHitDamagePoint: ATTR.CriticalHitDamagePoint;
@@ -95,7 +97,9 @@ export class Person {
     criticalHitPoint: number;
     criticalDefensePoint: number;
     physicsAttackPoint: number;
+    physicsDefensePoint: number;
     magicAttackPoint: number;
+    magicDefensePoint: number;
   }) {
     this.name = p.name;
     this.level = new Level(0);
@@ -107,7 +111,9 @@ export class Person {
     this.criticalHitDamagePoint = new ATTR.CriticalHitDamagePoint({ n: 2 });
     this.criticalDefensePoint = new ATTR.CriticalDefensePoint({ n: p.criticalDefensePoint });
     this.physicsAttackPoint = new ATTR.PhysicsAttackPoint({ n: p.physicsAttackPoint });
+    this.physicsDefensePoint = new ATTR.PhysicsDefensePoint({ n: p.physicsDefensePoint });
     this.magicAttackPoint = new ATTR.MagicAttackPoint({ n: p.magicAttackPoint });
+    this.magicDefensePoint = new ATTR.MagicDefensePoint({ n: p.magicDefensePoint });
     this.mp = new ATTR.MagicPoint({ n: 100, max: 100 });
     this.speedPoint = new ATTR.SpeedPoint({ n: p.speedPoint });
     // 装备得武器列表
@@ -132,13 +138,13 @@ export class Person {
 
   getAttr() {
     const weaponAttr = {
-      physicsAttackPoint: this.weaponList.map((w) => w.physicsAttackPoint.count).reduce((a, b) => a + b),
-      healthPoint: this.weaponList.map((w) => w.healthPoint.count).reduce((a, b) => a + b),
-      mp: this.weaponList.map((w) => w.mp.count).reduce((a, b) => a + b),
-      criticalHitPoint: this.weaponList.map((w) => w.criticalHitPoint.count).reduce((a, b) => a + b),
-      criticalHitDamagePoint: this.weaponList.map((w) => w.criticalHitDamagePoint.count).reduce((a, b) => a + b),
-      criticalDefensePoint: this.weaponList.map((w) => w.criticalDefensePoint.count).reduce((a, b) => a + b),
-      magicAttackPoint: this.weaponList.map((w) => w.magicAttackPoint.count).reduce((a, b) => a + b),
+      physicsAttackPoint: this.weaponList.map((w) => w.physicsAttackPoint.count).reduce((a, b) => a + b, 0),
+      healthPoint: this.weaponList.map((w) => w.healthPoint.count).reduce((a, b) => a + b, 0),
+      mp: this.weaponList.map((w) => w.mp.count).reduce((a, b) => a + b, 0),
+      criticalHitPoint: this.weaponList.map((w) => w.criticalHitPoint.count).reduce((a, b) => a + b, 0),
+      criticalHitDamagePoint: this.weaponList.map((w) => w.criticalHitDamagePoint.count).reduce((a, b) => a + b, 0),
+      criticalDefensePoint: this.weaponList.map((w) => w.criticalDefensePoint.count).reduce((a, b) => a + b, 0),
+      magicAttackPoint: this.weaponList.map((w) => w.magicAttackPoint.count).reduce((a, b) => a + b, 0),
     };
     return {
       physicsAttackPoint: this.physicsAttackPoint.count + weaponAttr.physicsAttackPoint,
@@ -147,7 +153,7 @@ export class Person {
       criticalHitPoint: this.criticalHitPoint.count + weaponAttr.criticalHitPoint,
       criticalHitDamagePoint: this.criticalHitDamagePoint.count + weaponAttr.criticalHitDamagePoint,
       criticalDefensePoint: this.criticalDefensePoint.count + weaponAttr.criticalDefensePoint,
-      magicAttackPoint:this.magicAttackPoint.count + weaponAttr.magicAttackPoint
+      magicAttackPoint: this.magicAttackPoint.count + weaponAttr.magicAttackPoint,
     };
   }
   /**获取伤害值 */
@@ -173,6 +179,12 @@ export class Person {
         desc: '普通攻击:',
       });
     }
+  }
+  // 遭受伤害
+  inDamage(damage: Damage) {
+    const physicsAttack = damage.physicsAttack.count - this.physicsDefensePoint.count;
+    const magicAttack = damage.magicAttack.count - this.magicDefensePoint.count;
+    return new Damage({ physicsAttack: physicsAttack, magicAttack: magicAttack, from: damage.from, desc: damage.desc });
   }
   getCanUseSkillList() {
     const mp = this.mp.count;

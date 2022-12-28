@@ -1,6 +1,6 @@
-import { Person } from '@/class/person';
-import { getWhiteSkill } from '@/data/skill';
-import { getWhiteWeapon } from '@/data/weapon';
+import { Person } from '../class/person';
+import { getWhiteSkill } from '../data/skill';
+import { getWhiteWeapon } from '../data/weapon';
 
 function fightPerson(p1: Person, p2: Person) {
   while (true) {

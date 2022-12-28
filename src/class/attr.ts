@@ -26,21 +26,9 @@ export class HealthPoint {
 /**速度 */
 export class SpeedPoint {
   count: number;
-  _addCount:number;
   constructor(p: { n: number }) {
     this.count = p.n;
-    this._addCount = p.n
   }
-  add(){
-    this._addCount += this.count
-  }
-  isMyTurn(s:SpeedPoint){
-    return this._addCount >= s._addCount
-  }
-  reset(){
-    this._addCount = this.count
-  }
-
 }
 /**物攻 */
 export class PhysicsAttackPoint {

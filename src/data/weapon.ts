@@ -1,9 +1,18 @@
-import { Weapon } from '@/class/good';
-import { Quality } from '@/enum/good';
+import { Weapon } from '../class/good';
+import { Quality } from '../enum/good';
 import random from 'random';
 
 export const weaponList = [
-  { physicsAttackPoint: 10, name: '破烂小刀', quality: Quality.white, speedPoint: 0, healthPoint: 0, criticalHitPoint: 0, criticalDefensePoint: 0 },
+  {
+    physicsAttackPoint: 10,
+    name: '破烂小刀',
+    quality: Quality.white,
+    speedPoint: 0,
+    healthPoint: 0,
+    criticalHitPoint: 0,
+    criticalDefensePoint: 0,
+    magicAttackPoint: 0,
+  },
 ];
 
 export function getWhiteWeapon() {
