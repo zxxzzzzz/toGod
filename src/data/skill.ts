@@ -10,10 +10,7 @@ export const skillList = [
     name: '火球术',
     type: SkillType.active,
     physicsAttack: 50,
-    damageFunc: (p: Person) => {
-      return new Damage({ physicsAttack: 30, magicAttack: 20 });
-    },
-    effectFunc: () => {},
+    magicAttack: 50,
     cdTurn: 3,
     magicPointCost: 30,
     quality: Quality.white,

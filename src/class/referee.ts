@@ -11,17 +11,13 @@ export class Referee {
   }
   fight() {
     // 战斗开始
-    this.p1List.forEach((p) => p.addFightState());
-    this.p2List.forEach((p) => p.addFightState());
     // 回合开始
     while(!this.isOver()){
       const p = this.getNextActionPerson()
-      p.attack()
+      p.getDamage()
     }
     // 回合结束
     // 战斗结束
-    this.p1List.forEach((p) => p.resetFightState());
-    this.p2List.forEach((p) => p.resetFightState());
   }
   isOver() {
     return this.p1List.every(p => p.isDead()) || this.p2List.every(p => p.isDead())

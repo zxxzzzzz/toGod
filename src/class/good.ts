@@ -1,6 +1,6 @@
 import { GoodType, Quality } from '@/enum/good';
 import { SkillType } from '@/enum/skill';
-import { PhysicsAttackPoint } from './attr';
+import * as ATTR from './attr';
 import { Damage } from './damage';
 import { Person } from './person';
 
@@ -20,73 +20,76 @@ export class Medicine {}
 /**功法 */
 export class BasicManeuvers {}
 
-
-/**功法 */
+/**状态 */
 export class State {
-  turn:number
-  constructor(p:{turn:number}){
-    this.turn = p.turn
+  turn: number;
+  constructor(p: { turn: number }) {
+    this.turn = p.turn;
   }
-  effect(p:{p1List:Person[], p2List:Person[]}){
-
-  }
+  effect() {}
 }
 
 /**武器 */
 export class Weapon {
-  physicsAttack: PhysicsAttackPoint;
+  healthPoint: ATTR.HealthPoint;
+  physicsAttackPoint: ATTR.PhysicsAttackPoint;
+  magicAttackPoint: ATTR.MagicAttackPoint;
+  mp: ATTR.MagicPoint;
+  criticalHitPoint: ATTR.CriticalHitPoint;
+  criticalHitDamagePoint: ATTR.CriticalHitDamagePoint;
+  criticalDefensePoint: ATTR.CriticalDefensePoint;
+  speedPoint: ATTR.SpeedPoint;
   name: string;
-  constructor(p: { physicsAttackPoint: number; name: string }) {
-    this.physicsAttack = new PhysicsAttackPoint({ n: p.physicsAttackPoint });
+  constructor(p: {
+    name: string;
+    speedPoint: number;
+    healthPoint: number;
+    criticalHitPoint: number;
+    criticalDefensePoint: number;
+    physicsAttackPoint: number;
+    magicAttackPoint: number;
+  }) {
+    this.healthPoint = new ATTR.HealthPoint({ n: p.healthPoint, max: p.healthPoint });
+    this.criticalHitPoint = new ATTR.CriticalHitPoint({ n: p.criticalHitPoint });
+    this.criticalHitDamagePoint = new ATTR.CriticalHitDamagePoint({ n: 2 });
+    this.criticalDefensePoint = new ATTR.CriticalDefensePoint({ n: p.criticalDefensePoint });
+    this.physicsAttackPoint = new ATTR.PhysicsAttackPoint({ n: p.physicsAttackPoint });
+    this.magicAttackPoint = new ATTR.MagicAttackPoint({ n: p.magicAttackPoint });
+    this.mp = new ATTR.MagicPoint({ n: 100, max: 100 });
+    this.speedPoint = new ATTR.SpeedPoint({ n: p.speedPoint });
     this.name = p.name;
   }
-  effect(){
-    
-  }
-  getDamage() {
-    return {
-      physicsAttack: this.physicsAttack.count,
-      magicAttack: 0,
-    };
-  }
+  effect() {}
 }
 
 /**技能 */
 export class Skill extends GoodBase {
   name: string;
   skillType: SkillType;
-  basePhysicsAttackPoint: PhysicsAttackPoint;
+  physicsAttackPoint: ATTR.PhysicsAttackPoint;
+  magicAttackPoint: ATTR.MagicAttackPoint;
   magicPointCost: number;
   cdTurn: number;
   turn: number;
-  damageFunc: (p1: Person, p2: Person) => Damage;
-  effectFunc: (p1: Person, p2: Person) => void;
   constructor(p: {
     name: string;
     type: SkillType;
     physicsAttack: number;
-    damageFunc: (p1: Person, p2: Person) => Damage;
-    effectFunc: (p1: Person, p2: Person) => void;
     quality: Quality;
     magicPointCost: number;
     cdTurn: number;
+    magicAttack: number;
   }) {
     super({ name: p.name, type: GoodType.skill });
     this.name = p.name;
     this.skillType = p.type;
     this.magicPointCost = p.magicPointCost;
-    this.basePhysicsAttackPoint = new PhysicsAttackPoint({ n: p.physicsAttack });
-    this.damageFunc = p.damageFunc;
-    this.effectFunc = p.effectFunc;
+    this.physicsAttackPoint = new ATTR.PhysicsAttackPoint({ n: p.physicsAttack });
+    this.magicAttackPoint = new ATTR.MagicAttackPoint({ n: p.magicAttack });
     this.cdTurn = p.cdTurn;
     this.turn = 0;
   }
-  effect() {
-    
-  }
-  getDamage(p1: Person, p2: Person) {
-    return this.damageFunc(p1, p2);
-  }
+  effect() {}
 }
 
 /**背包 */

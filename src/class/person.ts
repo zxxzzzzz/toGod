@@ -1,6 +1,10 @@
 import random from 'random';
 import * as ATTR from './attr';
 import * as GOOD from './good';
+import { Referee } from './referee';
+import * as R from 'ramda';
+import { Damage } from './damage';
+import { SkillType } from '@/enum/skill';
 
 /**金币 */
 class Coin {
@@ -75,14 +79,15 @@ export class Person {
   bag: GOOD.Bag;
   healthPoint: ATTR.HealthPoint;
   physicsAttackPoint: ATTR.PhysicsAttackPoint;
+  magicAttackPoint: ATTR.MagicAttackPoint;
   mp: ATTR.MagicPoint;
   criticalHitPoint: ATTR.CriticalHitPoint;
   criticalHitDamagePoint: ATTR.CriticalHitDamagePoint;
   criticalDefensePoint: ATTR.CriticalDefensePoint;
   speedPoint: ATTR.SpeedPoint;
   weaponList: GOOD.Weapon[];
-  skillList:GOOD.Skill[];
-  stateList:GOOD.State[];
+  skillList: GOOD.Skill[];
+  stateList: GOOD.State[];
   constructor(p: {
     name: string;
     speedPoint: number;
@@ -90,6 +95,7 @@ export class Person {
     criticalHitPoint: number;
     criticalDefensePoint: number;
     physicsAttackPoint: number;
+    magicAttackPoint: number;
   }) {
     this.name = p.name;
     this.level = new Level(0);
@@ -101,6 +107,7 @@ export class Person {
     this.criticalHitDamagePoint = new ATTR.CriticalHitDamagePoint({ n: 2 });
     this.criticalDefensePoint = new ATTR.CriticalDefensePoint({ n: p.criticalDefensePoint });
     this.physicsAttackPoint = new ATTR.PhysicsAttackPoint({ n: p.physicsAttackPoint });
+    this.magicAttackPoint = new ATTR.MagicAttackPoint({ n: p.magicAttackPoint });
     this.mp = new ATTR.MagicPoint({ n: 100, max: 100 });
     this.speedPoint = new ATTR.SpeedPoint({ n: p.speedPoint });
     // 装备得武器列表
@@ -113,46 +120,76 @@ export class Person {
   /**装备武器 */
   addWeapon(weapon: GOOD.Weapon) {
     console.log(this.name, '装备了武器', weapon.name);
+    weapon.effect();
     this.weaponList.push(weapon);
   }
   /**装备技能 */
-  addSkill(skill:GOOD.Skill){
+  addSkill(skill: GOOD.Skill) {
     console.log(this.name, '装备了技能', skill.name);
+    skill.effect();
     this.skillList.push(skill);
   }
-  /**添加战斗状态 */
-  addFightState(){
 
-  }
-  /**重置战斗状态 */
-  resetFightState(){
-
-  }
-  attack(){
-
+  getAttr() {
+    const weaponAttr = {
+      physicsAttackPoint: this.weaponList.map((w) => w.physicsAttackPoint.count).reduce((a, b) => a + b),
+      healthPoint: this.weaponList.map((w) => w.healthPoint.count).reduce((a, b) => a + b),
+      mp: this.weaponList.map((w) => w.mp.count).reduce((a, b) => a + b),
+      criticalHitPoint: this.weaponList.map((w) => w.criticalHitPoint.count).reduce((a, b) => a + b),
+      criticalHitDamagePoint: this.weaponList.map((w) => w.criticalHitDamagePoint.count).reduce((a, b) => a + b),
+      criticalDefensePoint: this.weaponList.map((w) => w.criticalDefensePoint.count).reduce((a, b) => a + b),
+      magicAttackPoint: this.weaponList.map((w) => w.magicAttackPoint.count).reduce((a, b) => a + b),
+    };
+    return {
+      physicsAttackPoint: this.physicsAttackPoint.count + weaponAttr.physicsAttackPoint,
+      healthPoint: this.healthPoint.count + weaponAttr.healthPoint,
+      mp: this.mp.count + weaponAttr.mp,
+      criticalHitPoint: this.criticalHitPoint.count + weaponAttr.criticalHitPoint,
+      criticalHitDamagePoint: this.criticalHitDamagePoint.count + weaponAttr.criticalHitDamagePoint,
+      criticalDefensePoint: this.criticalDefensePoint.count + weaponAttr.criticalDefensePoint,
+      magicAttackPoint:this.magicAttackPoint.count + weaponAttr.magicAttackPoint
+    };
   }
   /**获取伤害值 */
   getDamage() {
-    // const randomCritical = random.int(0, 100);
-    // const weaponDamage = this.getWeaponDamage()
-    // // 是否暴击
-    // const isCritical = this.criticalHitPoint.count - p2.criticalDefensePoint.count >= randomCritical;
-    // // 武器伤害
-    // return {
-    //   physicsAttack: (this.physicsAttackPoint.count + weaponDamage.physicsAttack) * (isCritical ? this.criticalHitDamagePoint.count : 1),
-    //   magicAttack: 0,
-    //   isCritical,
-    // };
+    const attr = this.getAttr();
+    const filterSkillList = this.getCanUseSkillList();
+    if (filterSkillList.length) {
+      // 使用技能
+      const skillRandom = random.int(0, filterSkillList.length);
+      const skillDamage = this.useSkill(filterSkillList[skillRandom]);
+      return new Damage({
+        physicsAttack: attr.physicsAttackPoint + skillDamage.physicsAttack.count,
+        magicAttack: skillDamage.magicAttack.count,
+        from: this,
+        desc: skillDamage.desc,
+      });
+    } else {
+      // 普通攻击
+      return new Damage({
+        physicsAttack: attr.physicsAttackPoint,
+        magicAttack: attr.magicAttackPoint,
+        from: this,
+        desc: '普通攻击:',
+      });
+    }
   }
-  getWeaponDamage() {
-    const weaponDamage = this.weaponList.reduce(
-      (re, weapon) => {
-        const wd = weapon.getDamage();
-        return { physicsAttack: re.physicsAttack + wd.physicsAttack, magicAttack: re.magicAttack + wd.magicAttack };
-      },
-      { physicsAttack: 0, magicAttack: 0 }
-    );
-    return weaponDamage;
+  getCanUseSkillList() {
+    const mp = this.mp.count;
+    return this.skillList.filter((s) => s.skillType === SkillType.active && mp >= s.magicPointCost);
+  }
+  useSkill(skill: GOOD.Skill | undefined) {
+    if (!skill) {
+      return new Damage({ physicsAttack: 0, magicAttack: 0, from: this, desc: '' });
+    }
+    this.mp.count += skill.magicPointCost;
+    skill.effect();
+    return new Damage({
+      physicsAttack: skill.physicsAttackPoint.count,
+      magicAttack: skill.magicAttackPoint.count,
+      from: this,
+      desc: '使用技能:' + skill.name,
+    });
   }
   isDead() {
     return this.healthPoint.count <= 0;
