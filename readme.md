@@ -18,3 +18,4 @@
 ### log
 - 2022.12.27 战斗流程 referee.ts 部分
 - 2022.12.28 战斗 person.ts 部分
+- https://zhuanlan.zhihu.com/p/80180202 参照文章
