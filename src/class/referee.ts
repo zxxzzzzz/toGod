@@ -25,6 +25,7 @@ export class Referee {
       this.roundEnd()
     }
     this.fightEnd()
+    console.log(123);
     // 战斗结束
   }
   isOver() {
@@ -42,7 +43,7 @@ export class Referee {
     this.speedCache = this.speedCache.map((d) => ({ ...d, speed: d.speed + d.p.getSpeed() }));
     const actionPersonList = this.speedCache.filter(s => s.speed >= speedMax)
     actionPersonList.forEach((s) => {
-      s.p.action()
+      const damage = s.p.action()
       s.speed = 0
     })
     // 回合结束

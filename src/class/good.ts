@@ -24,12 +24,16 @@ export class BasicManeuvers {}
 /**状态 */
 export class State {
   turn: number;
-  step:FightStep;
-  constructor(p: { turn: number,step:FightStep }) {
+  step: FightStep;
+  person: Person;
+  constructor(p: { turn: number; step: FightStep,person:Person }) {
     this.turn = p.turn;
-    this.step = p.step
+    this.step = p.step;
+    this.person = p.person
   }
-  effect() {}
+  effect() {
+    
+  }
 }
 
 /**武器 */

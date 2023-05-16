@@ -14,6 +14,11 @@
 // 闪避：666
 // 抗爆：66%
 
+
+
+
+/**体质 */
+
 /**生命 */
 export class HealthPoint {
   max: number;

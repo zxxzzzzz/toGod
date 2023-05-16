@@ -8,8 +8,10 @@ import random from 'random';
 
 export const stateList = [
   {
-    name: '回复',
+    name: '初级回复',
     step:FightStep.roundStart,
-    
+    effect:(p:Person) => {
+      p.healthPoint.count += 20
+    }
   },
 ];

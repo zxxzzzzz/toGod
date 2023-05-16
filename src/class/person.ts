@@ -72,56 +72,95 @@ class LingBase {
 // 抗爆：66%
 
 export class Person {
-  name: string;
-  level: Level;
-  aura: Aura;
-  coin: Coin;
+  // 体质：影响HP和速度
+  // 力量：影响MP、物理伤害和速度
+  // 魔力：影响MP、法术伤害和速度
+  // 耐力：影响物理防御、法术防御和速度
+  // 敏捷：影响速度
+  /**体质 */
+  py: number = 0;
+  /**力量 */
+  power: number = 0;
+  /**魔力 */
+  magic: number = 0;
+  /** 耐力*/
+  endurance: number = 0;
+  /** 敏捷*/
+  agile: number = 0;
+
+  /** 当前生命值*/
+  currentHP: number = 0;
+  /** 当前魔法值*/
+  currentMP: number = 0;
+
+  name: string = '';
+  /**等级 */
+  level: number = 1;
+  /**灵气 */
+  aura: number = 0;
+  /**金币 */
+  coin: number = 0;
+  /**背包 */
   bag: GOOD.Bag;
-  healthPoint: ATTR.HealthPoint;
-  physicsAttackPoint: ATTR.PhysicsAttackPoint;
-  physicsDefensePoint: ATTR.PhysicsDefensePoint;
-  magicAttackPoint: ATTR.MagicAttackPoint;
-  magicDefensePoint: ATTR.MagicDefensePoint;
-  mp: ATTR.MagicPoint;
-  criticalHitPoint: ATTR.CriticalHitPoint;
-  criticalHitDamagePoint: ATTR.CriticalHitDamagePoint;
-  criticalDefensePoint: ATTR.CriticalDefensePoint;
-  speedPoint: ATTR.SpeedPoint;
+  /**武器列表 */
   weaponList: GOOD.Weapon[];
+  /**技能列表 */
   skillList: GOOD.Skill[];
+  /**状态列表 */
   stateList: GOOD.State[];
-  constructor(p: {
-    name: string;
-    speedPoint: number;
-    healthPoint: number;
-    criticalHitPoint: number;
-    criticalDefensePoint: number;
-    physicsAttackPoint: number;
-    physicsDefensePoint: number;
-    magicAttackPoint: number;
-    magicDefensePoint: number;
-  }) {
+  constructor(p: { name: string; py: number; power: number; magic: number; endurance: number; agile: number; level: number }) {
     this.name = p.name;
-    this.level = new Level(0);
-    this.aura = new Aura(0);
-    this.coin = new Coin(0);
+    this.level = p.level;
+    this.aura = 0;
+    this.coin = 0;
     this.bag = new GOOD.Bag();
-    this.healthPoint = new ATTR.HealthPoint({ n: p.healthPoint, max: p.healthPoint });
-    this.criticalHitPoint = new ATTR.CriticalHitPoint({ n: p.criticalHitPoint });
-    this.criticalHitDamagePoint = new ATTR.CriticalHitDamagePoint({ n: 2 });
-    this.criticalDefensePoint = new ATTR.CriticalDefensePoint({ n: p.criticalDefensePoint });
-    this.physicsAttackPoint = new ATTR.PhysicsAttackPoint({ n: p.physicsAttackPoint });
-    this.physicsDefensePoint = new ATTR.PhysicsDefensePoint({ n: p.physicsDefensePoint });
-    this.magicAttackPoint = new ATTR.MagicAttackPoint({ n: p.magicAttackPoint });
-    this.magicDefensePoint = new ATTR.MagicDefensePoint({ n: p.magicDefensePoint });
-    this.mp = new ATTR.MagicPoint({ n: 100, max: 100 });
-    this.speedPoint = new ATTR.SpeedPoint({ n: p.speedPoint });
+
+    this.py = p.py;
+    this.power = p.power;
+    this.agile = p.agile;
+    this.endurance = p.endurance;
+    this.magic = p.magic;
     // 装备得武器列表
     this.weaponList = [];
     // 装备得技能列表
     this.skillList = [];
     // 状态列表
     this.stateList = [];
+  }
+  /**获取最大生命值 */
+  getHP() {
+    // 体质 * 16+ LV * 35 + 200 + 职业附加 + 装备附加
+    return this.py * 16 + this.level * 35 + 200 + 0 + 0;
+  }
+  /**获取最大 */
+  getMP() {
+    // MP = 力量 * 1 + 魔力 * 1 + LV * 5 + 200 + 装备附加
+    return this.power * 1 + this.magic * 1 + this.level * 5 + 200 + 0;
+  }
+  /**获取物理攻击 */
+  getPhysicsAttack() {
+    // 物理攻击 = 力量 * 1 + LV * 10 + 80 + 职业附加 + 装备附加
+    return this.power * 1 + this.level * 10 + 80 + 0 + 0;
+  }
+  /**获取魔法攻击 */
+  getMagicAttack() {
+    // 法术攻击 = 魔力 * 1 + LV * 10 + 80 + 职业附加 + 装备附加
+    return this.power * 1 + this.level * 10 + 80 + 0 + 0;
+  }
+  /**获取物理防御 */
+  getPhysicsDefense() {
+    // 物理防御 = 耐力 * 2 + LV * 5 + 职业附加 + 装备附加
+    return this.endurance * 2 + this.level * 5 + 0 + 0;
+  }
+  /**获取魔法防御 */
+  getMagicDefense() {
+    // 魔法防御 = 耐力 * 2 + LV * 5 + 职业附加 + 装备附加
+    return this.endurance * 2 + this.level * 5 + 0 + 0;
+  }
+  /**获取速度 */
+  getSpeed() {
+    // 速度 = 体质 * 0.2 + 力量 * 0.2 + 魔力 * 0.2 + 耐力 * 0.2 + 敏捷 * 1.5 + 职业附加 + 装备附加
+    return this.py * 0.2 + this.power * 0.2 + this.magic * 0.2 + this.endurance * 0.2 + this.agile * 1.5 + 0 + 0;
   }
   /**装备武器 */
   addWeapon(weapon: GOOD.Weapon) {
@@ -136,92 +175,26 @@ export class Person {
     this.skillList.push(skill);
   }
 
-  getAttr() {
-    const weaponAttr = {
-      physicsAttackPoint: this.weaponList.map((w) => w.physicsAttackPoint.count).reduce((a, b) => a + b, 0),
-      healthPoint: this.weaponList.map((w) => w.healthPoint.count).reduce((a, b) => a + b, 0),
-      mp: this.weaponList.map((w) => w.mp.count).reduce((a, b) => a + b, 0),
-      criticalHitPoint: this.weaponList.map((w) => w.criticalHitPoint.count).reduce((a, b) => a + b, 0),
-      criticalHitDamagePoint: this.weaponList.map((w) => w.criticalHitDamagePoint.count).reduce((a, b) => a + b, 0),
-      criticalDefensePoint: this.weaponList.map((w) => w.criticalDefensePoint.count).reduce((a, b) => a + b, 0),
-      magicAttackPoint: this.weaponList.map((w) => w.magicAttackPoint.count).reduce((a, b) => a + b, 0),
-    };
-    return {
-      physicsAttackPoint: this.physicsAttackPoint.count + weaponAttr.physicsAttackPoint,
-      healthPoint: this.healthPoint.count + weaponAttr.healthPoint,
-      mp: this.mp.count + weaponAttr.mp,
-      criticalHitPoint: this.criticalHitPoint.count + weaponAttr.criticalHitPoint,
-      criticalHitDamagePoint: this.criticalHitDamagePoint.count + weaponAttr.criticalHitDamagePoint,
-      criticalDefensePoint: this.criticalDefensePoint.count + weaponAttr.criticalDefensePoint,
-      magicAttackPoint: this.magicAttackPoint.count + weaponAttr.magicAttackPoint,
-    };
-  }
-  /**获取伤害值 */
-  getDamage() {
-    const attr = this.getAttr();
-    const filterSkillList = this.getCanUseSkillList();
-    if (filterSkillList.length) {
-      // 使用技能
-      const skillRandom = random.int(0, filterSkillList.length);
-      const skillDamage = this.useSkill(filterSkillList[skillRandom]);
-      return new Damage({
-        physicsAttack: attr.physicsAttackPoint + skillDamage.physicsAttack.count,
-        magicAttack: skillDamage.magicAttack.count,
-        from: this,
-        desc: skillDamage.desc,
-      });
-    } else {
-      // 普通攻击
-      return new Damage({
-        physicsAttack: attr.physicsAttackPoint,
-        magicAttack: attr.magicAttackPoint,
-        from: this,
-        desc: '普通攻击:',
-      });
-    }
-  }
-  // 遭受伤害
-  inDamage(damage: Damage) {
-    const physicsAttack = damage.physicsAttack.count - this.physicsDefensePoint.count;
-    const magicAttack = damage.magicAttack.count - this.magicDefensePoint.count;
-    return new Damage({ physicsAttack: physicsAttack, magicAttack: magicAttack, from: damage.from, desc: damage.desc });
-  }
-  getCanUseSkillList() {
-    const mp = this.mp.count;
-    return this.skillList.filter((s) => s.skillType === SkillType.active && mp >= s.magicPointCost);
-  }
-  useSkill(skill: GOOD.Skill | undefined) {
-    if (!skill) {
-      return new Damage({ physicsAttack: 0, magicAttack: 0, from: this, desc: '' });
-    }
-    this.mp.count += skill.magicPointCost;
-    skill.effect();
-    return new Damage({
-      physicsAttack: skill.physicsAttackPoint.count,
-      magicAttack: skill.magicAttackPoint.count,
-      from: this,
-      desc: '使用技能:' + skill.name,
-    });
-  }
   isDead() {
-    return this.healthPoint.count <= 0;
-  }
-  getSpeed() {
-    return 100;
+    return this.currentHP <= 0;
   }
   /**普通攻击 */
-  attack(){
-
+  attack() {
+    return {
+      physicsAttack: this.getPhysicsAttack(),
+      magicAttack: this.getMagicAttack(),
+      // 攻击范围
+      count:1
+    };
   }
   /**行动 做一个比较好的选择*/
   action() {
     // 先技能
-    const skill = this.skillList.filter((s) => s.turn === s.cdTurn)?.[0];
-    if (skill) {
-      skill.effect();
-      return
-    }
+    // const skill = this.skillList.filter((s) => s.turn === s.cdTurn)?.[0];
+    // if (skill) {
+    //   return skill.effect();
+    // }
     // 再普攻
-    this.attack()
+    return this.attack();
   }
 }
