@@ -12,7 +12,7 @@ export const skillList = [
     physicsAttack: 50,
     magicAttack: 50,
     cdTurn: 3,
-    magicPointCost: 30,
+    magicPointCost: 30, 
     quality: Quality.white,
   },
 ];

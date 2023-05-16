@@ -1,5 +1,6 @@
 import { GoodType, Quality } from '../enum/good';
 import { SkillType } from '../enum/skill';
+import { FightStep } from '../enum/fight';
 import * as ATTR from './attr';
 import { Damage } from './damage';
 import { Person } from './person';
@@ -23,8 +24,10 @@ export class BasicManeuvers {}
 /**状态 */
 export class State {
   turn: number;
-  constructor(p: { turn: number }) {
+  step:FightStep;
+  constructor(p: { turn: number,step:FightStep }) {
     this.turn = p.turn;
+    this.step = p.step
   }
   effect() {}
 }

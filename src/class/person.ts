@@ -206,4 +206,22 @@ export class Person {
   isDead() {
     return this.healthPoint.count <= 0;
   }
+  getSpeed() {
+    return 100;
+  }
+  /**普通攻击 */
+  attack(){
+
+  }
+  /**行动 做一个比较好的选择*/
+  action() {
+    // 先技能
+    const skill = this.skillList.filter((s) => s.turn === s.cdTurn)?.[0];
+    if (skill) {
+      skill.effect();
+      return
+    }
+    // 再普攻
+    this.attack()
+  }
 }
