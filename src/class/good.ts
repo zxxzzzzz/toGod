@@ -26,48 +26,14 @@ export class State {
   turn: number;
   step: FightStep;
   person: Person;
-  constructor(p: { turn: number; step: FightStep,person:Person }) {
+  constructor(p: { turn: number; step: FightStep; person: Person }) {
     this.turn = p.turn;
     this.step = p.step;
-    this.person = p.person
-  }
-  effect() {
-    
-  }
-}
-
-/**武器 */
-export class Weapon {
-  healthPoint: ATTR.HealthPoint;
-  physicsAttackPoint: ATTR.PhysicsAttackPoint;
-  magicAttackPoint: ATTR.MagicAttackPoint;
-  mp: ATTR.MagicPoint;
-  criticalHitPoint: ATTR.CriticalHitPoint;
-  criticalHitDamagePoint: ATTR.CriticalHitDamagePoint;
-  criticalDefensePoint: ATTR.CriticalDefensePoint;
-  speedPoint: ATTR.SpeedPoint;
-  name: string;
-  constructor(p: {
-    name: string;
-    speedPoint: number;
-    healthPoint: number;
-    criticalHitPoint: number;
-    criticalDefensePoint: number;
-    physicsAttackPoint: number;
-    magicAttackPoint: number;
-  }) {
-    this.healthPoint = new ATTR.HealthPoint({ n: p.healthPoint, max: p.healthPoint });
-    this.criticalHitPoint = new ATTR.CriticalHitPoint({ n: p.criticalHitPoint });
-    this.criticalHitDamagePoint = new ATTR.CriticalHitDamagePoint({ n: 2 });
-    this.criticalDefensePoint = new ATTR.CriticalDefensePoint({ n: p.criticalDefensePoint });
-    this.physicsAttackPoint = new ATTR.PhysicsAttackPoint({ n: p.physicsAttackPoint });
-    this.magicAttackPoint = new ATTR.MagicAttackPoint({ n: p.magicAttackPoint });
-    this.mp = new ATTR.MagicPoint({ n: 100, max: 100 });
-    this.speedPoint = new ATTR.SpeedPoint({ n: p.speedPoint });
-    this.name = p.name;
+    this.person = p.person;
   }
   effect() {}
 }
+
 
 /**技能 */
 export class Skill extends GoodBase {

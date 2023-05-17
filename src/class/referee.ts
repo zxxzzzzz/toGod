@@ -17,15 +17,14 @@ export class Referee {
   }
   fight() {
     // 战斗开始
-    this.fightStart()
-    while (this.isOver()) {
+    this.fightStart();
+    while (!this.isOver()) {
       // 回合开始
-      this.roundStart()
+      this.roundStart();
       // 回合结束
-      this.roundEnd()
+      this.roundEnd();
     }
-    this.fightEnd()
-    console.log(123);
+    this.fightEnd();
     // 战斗结束
   }
   isOver() {
@@ -40,26 +39,40 @@ export class Referee {
     this.p2List.forEach((p) => p.stateList.filter((s) => s.step === FightStep.roundStart).forEach((s) => s.effect()));
     // 行动阶段
     // 获取可以行动的人
-    this.speedCache = this.speedCache.map((d) => ({ ...d, speed: d.speed + d.p.getSpeed() }));
-    const actionPersonList = this.speedCache.filter(s => s.speed >= speedMax)
+    this.speedCache = this.speedCache.map((s) => ({ ...s, speed: s.speed + s.p.getSpeed() }));
+    const actionPersonList = this.speedCache.filter((s) => s.speed >= speedMax);
     actionPersonList.forEach((s) => {
-      const damage = s.p.action()
-      s.speed = 0
-    })
+      if (s.p.isDead()) {
+        return;
+      }
+      const damage = s.p.action();
+      this.getRival(s.p).filter(p => !p.isDead())
+        .slice(0, damage.range)
+        .forEach((p) => {
+          const d = p.inDamage(damage);
+          console.log(s.p.name, '攻击', p.name, '造成物理伤害', d.physicsDamage, '魔法伤害', d.magicDamage, p.currentHP);
+        });
+      s.speed = 0;
+    });
     // 回合结束
+    // 状态结算
     this.p1List.forEach((p) => p.stateList.filter((s) => s.step === FightStep.roundEnd).forEach((s) => s.effect()));
     this.p2List.forEach((p) => p.stateList.filter((s) => s.step === FightStep.roundEnd).forEach((s) => s.effect()));
   }
-  roundEnd(){
+  roundEnd() {
     this.p1List.forEach((p) => p.stateList.filter((s) => s.step === FightStep.roundEnd).forEach((s) => s.effect()));
     this.p2List.forEach((p) => p.stateList.filter((s) => s.step === FightStep.roundEnd).forEach((s) => s.effect()));
   }
-  fightStart() {}
+  fightStart() {
+    // 战斗前准备
+    this.p1List.forEach((p) => p.beforeFight());
+    this.p2List.forEach((p) => p.beforeFight());
+  }
   fightEnd() {}
 
   /**获取战斗中速度最快的人，以它作为速度的阈值，如果有人能达到这个值，即可触发行动 */
   getMaxSpeed() {
-    return Math.max(...this.p1List.map((p) => p.speedPoint.count), ...this.p2List.map((p) => p.speedPoint.count));
+    return Math.max(...this.p1List.map((p) => p.getSpeed()), ...this.p2List.map((p) => p.getSpeed()));
   }
   // 获取对手
   getRival(p: Person) {

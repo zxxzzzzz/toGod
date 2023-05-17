@@ -4,25 +4,21 @@ import { Referee } from '../src/class/referee';
 
 const p1 = new Person({
   name: '张三',
-  speedPoint: 7,
-  healthPoint: 100,
-  criticalHitPoint: 20,
-  criticalDefensePoint: 100,
-  physicsAttackPoint: 10,
-  magicAttackPoint: 0,
-  magicDefensePoint: 0,
-  physicsDefensePoint: 1,
+  py: 1,
+  power: 1,
+  magic: 1,
+  endurance: 1,
+  agile: 1,
+  level:1
 });
 const p2 = new Person({
   name: '李四',
-  magicAttackPoint: 0,
-  speedPoint: 5,
-  healthPoint: 300,
-  criticalHitPoint: 100,
-  criticalDefensePoint: 5,
-  physicsAttackPoint: 10,
-  magicDefensePoint: 0,
-  physicsDefensePoint: 1,
+  py: 1,
+  power: 1,
+  magic: 1,
+  endurance: 1,
+  agile: 2,
+  level:1
 });
 const referee = new Referee({ p1List: [p1], p2List: [p2] });
 

@@ -4,21 +4,14 @@ import { Referee } from '../src/class/referee';
 
 const p1 = new Person({
   name: '张三',
-  speedPoint: 7,
-  healthPoint: 100,
-  criticalHitPoint: 20,
-  criticalDefensePoint: 100,
-  physicsAttackPoint: 10,
-  magicAttackPoint: 0,
-  magicDefensePoint: 0,
-  physicsDefensePoint: 1,
+  py: 10,
+  power: 10,
+  magic: 10,
+  endurance: 10,
+  agile: 10,
+  level: 1,
 });
 
-
 describe('人', () => {
-  test('', () => {
-    
-  });
-
-})
-
+  test('', () => {});
+});

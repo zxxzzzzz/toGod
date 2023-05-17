@@ -5,6 +5,7 @@ import { Referee } from './referee';
 import * as R from 'ramda';
 import { Damage } from './damage';
 import { SkillType } from '../enum/skill';
+import { Weapon } from '@/class/weapon';
 
 /**金币 */
 class Coin {
@@ -92,7 +93,7 @@ export class Person {
   currentHP: number = 0;
   /** 当前魔法值*/
   currentMP: number = 0;
-
+  /**名称 */
   name: string = '';
   /**等级 */
   level: number = 1;
@@ -103,7 +104,7 @@ export class Person {
   /**背包 */
   bag: GOOD.Bag;
   /**武器列表 */
-  weaponList: GOOD.Weapon[];
+  weaponList: Weapon[];
   /**技能列表 */
   skillList: GOOD.Skill[];
   /**状态列表 */
@@ -130,42 +131,63 @@ export class Person {
   /**获取最大生命值 */
   getHP() {
     // 体质 * 16+ LV * 35 + 200 + 职业附加 + 装备附加
-    return this.py * 16 + this.level * 35 + 200 + 0 + 0;
+    return this.py * 16 + this.level * 35 + 200 + 0 + this.getWeaponHP();
   }
   /**获取最大 */
   getMP() {
     // MP = 力量 * 1 + 魔力 * 1 + LV * 5 + 200 + 装备附加
-    return this.power * 1 + this.magic * 1 + this.level * 5 + 200 + 0;
+    return this.power * 1 + this.magic * 1 + this.level * 5 + 200 + this.getWeaponMP();
   }
   /**获取物理攻击 */
   getPhysicsAttack() {
     // 物理攻击 = 力量 * 1 + LV * 10 + 80 + 职业附加 + 装备附加
-    return this.power * 1 + this.level * 10 + 80 + 0 + 0;
+    return this.power * 1 + this.level * 10 + 80 + 0 + this.getWeaponPhysicsAttack();
   }
   /**获取魔法攻击 */
   getMagicAttack() {
     // 法术攻击 = 魔力 * 1 + LV * 10 + 80 + 职业附加 + 装备附加
-    return this.power * 1 + this.level * 10 + 80 + 0 + 0;
+    return this.power * 1 + this.level * 10 + 80 + 0 + this.getWeaponMagicAttack();
   }
   /**获取物理防御 */
   getPhysicsDefense() {
     // 物理防御 = 耐力 * 2 + LV * 5 + 职业附加 + 装备附加
-    return this.endurance * 2 + this.level * 5 + 0 + 0;
+    return this.endurance * 2 + this.level * 5 + 0 + this.getWeaponPhysicsDefense();
   }
   /**获取魔法防御 */
   getMagicDefense() {
     // 魔法防御 = 耐力 * 2 + LV * 5 + 职业附加 + 装备附加
-    return this.endurance * 2 + this.level * 5 + 0 + 0;
+    return this.endurance * 2 + this.level * 5 + 0 + this.getWeaponMagicDefense();
   }
   /**获取速度 */
   getSpeed() {
     // 速度 = 体质 * 0.2 + 力量 * 0.2 + 魔力 * 0.2 + 耐力 * 0.2 + 敏捷 * 1.5 + 职业附加 + 装备附加
     return this.py * 0.2 + this.power * 0.2 + this.magic * 0.2 + this.endurance * 0.2 + this.agile * 1.5 + 0 + 0;
   }
+  getWeaponPhysicsAttack() {
+    return this.weaponList.map((w) => w.getPhysicsAttack()).reduce((a, b) => a + b, 0);
+  }
+  getWeaponPhysicsDefense() {
+    return this.weaponList.map((w) => w.getPhysicsDefense()).reduce((a, b) => a + b, 0);
+  }
+  getWeaponMagicAttack() {
+    return this.weaponList.map((w) => w.getMagicAttack()).reduce((a, b) => a + b, 0);
+  }
+  getWeaponMagicDefense() {
+    return this.weaponList.map((w) => w.getMagicDefense()).reduce((a, b) => a + b, 0);
+  }
+  getWeaponHP() {
+    return this.weaponList.map((w) => w.getHP()).reduce((a, b) => a + b, 0);
+  }
+  getWeaponMP() {
+    return this.weaponList.map((w) => w.getMP()).reduce((a, b) => a + b, 0);
+  }
+  /**武器攻击范围 */
+  getWeaponAttackRange() {
+    return Math.max(...this.weaponList.map((w) => w.getAttackRange()), 1);
+  }
   /**装备武器 */
-  addWeapon(weapon: GOOD.Weapon) {
-    console.log(this.name, '装备了武器', weapon.name);
-    weapon.effect();
+  addWeapon(weapon: Weapon) {
+    console.log(this.name, '装备了武器', weapon.p.name);
     this.weaponList.push(weapon);
   }
   /**装备技能 */
@@ -179,12 +201,22 @@ export class Person {
     return this.currentHP <= 0;
   }
   /**普通攻击 */
-  attack() {
+  normalAttack() {
     return {
       physicsAttack: this.getPhysicsAttack(),
       magicAttack: this.getMagicAttack(),
       // 攻击范围
-      count:1
+      range: this.getWeaponAttackRange(),
+    };
+  }
+  /**遭受伤害的计算 */
+  inDamage(d: { physicsAttack: number; magicAttack: number }) {
+    const phDamage = d.physicsAttack - this.getPhysicsDefense();
+    const maDamage = d.magicAttack - this.getMagicAttack();
+    this.currentHP = this.currentHP - phDamage - maDamage;
+    return {
+      physicsDamage: phDamage,
+      magicDamage: maDamage,
     };
   }
   /**行动 做一个比较好的选择*/
@@ -195,6 +227,11 @@ export class Person {
     //   return skill.effect();
     // }
     // 再普攻
-    return this.attack();
+    return this.normalAttack();
+  }
+  /**战斗开始前的状态处理 */
+  beforeFight(){
+    this.currentHP = this.getHP()
+    this.currentMP = this.getMP()
   }
 }
